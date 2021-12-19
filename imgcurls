@@ -8,10 +8,11 @@ p=''
 n=''
 u=''
 v=''
-l='1'
+l=1
+j=''
 
 # Loop through and get the arguments
-while getopts s:e:o:p:n:u:v:l: flag
+while getopts s:e:o:p:n:u:v:l:j: flag
 do
 	case "${flag}" in
 		s) s=${OPTARG};;
@@ -22,8 +23,33 @@ do
 		u) u=${OPTARG};;
 		v) v=${OPTARG};;
 		l) l=${OPTARG};;
+		j) j=${OPTARG};;
 	esac
 done
+
+# Check to see if a url list was provided
+if [ ! -z $j ]; then
+	# Check for required args
+	if [ -z $j ] || [ -z $o ]; then
+		echo "\e[0;91mUsage: $0 -j <input_file> -o <output_prefix> -p [output_suffix] -s [start_num]\e[0m"
+		exit 1
+	fi
+
+	# Set start to 0 if not defined
+	if [ -z $s ]; then
+		s=0
+	fi
+
+	# Open the file
+	# If so, loop through the list and download
+	while read line
+	do
+		curl --create-dirs -o $o$s$p $line
+		printf "Saved $line in $o$s$p\n" $s
+		s=$((s+1))
+	done < $j
+	exit 0
+fi
 
 # Check for required arguments
 if [ -z "$s" ] || [ -z "$e" ] || [ -z "$o" ] || [ -z "$o" ]; then
