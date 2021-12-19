@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Create variables to store arguments
+s=''
+e=''
+o=''
+p=''
+n=''
+u=''
+v=''
+l='1'
+
+# Loop through and get the arguments
+while getopts s:e:o:p:n:u:v:l: flag
+do
+	case "${flag}" in
+		s) s=${OPTARG};;
+		e) e=${OPTARG};;
+		o) o=${OPTARG};;
+		p) p=${OPTARG};;
+		n) n=${OPTARG};;
+		u) u=${OPTARG};;
+		v) v=${OPTARG};;
+		l) l=${OPTARG};;
+	esac
+done
+
+# Check for required arguments
+if [ -z "$s" ] || [ -z "$e" ] || [ -z "$o" ] || [ -z "$o" ]; then
+	echo -e "\e[0;91mUsage: $0 -u[url_prefix] -v[url_suffix] -s <start> -e <end> -l [num_width] -o <output_prefix> -p [output_suffix]\e[0m"
+	exit 1
+fi
+
+# Loop from start to end and curl using [$u{$s}$v] as the url
+while [ $s -lt $e ]
+do
+	curl --create-dirs -o $o$s$p "$( printf "$u%0${l}d$v" $s )"
+	printf "Saved $u%0${l}d$v in $o$s$p\n" $s
+	s=$((s+1))
+done
+
+# Exit with success
+echo -e "\e[0;92mImages fetched successfully!\e[0m"
+exit 0
